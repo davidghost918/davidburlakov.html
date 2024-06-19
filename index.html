@@ -2,45 +2,185 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Каталог товаров</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Форма банковской карты</title>
+    <style>
+        .container {
+            display: flex;
+        }
+        .form-container {
+            margin-right: 20px;
+        }
+        .card-preview {
+            border: 1px solid #000;
+            width: 300px;
+            height: 180px;
+            padding: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            background-color: #f4f4f4;
+            border-radius: 15px;
+        }
+        .card-preview .bank-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .card-preview .card-number {
+            font-size: 18px;
+            margin-top: 20px;
+            letter-spacing: 2px;
+        }
+        .card-preview .cardholder-name {
+            font-size: 14px;
+            position: absolute;
+            bottom: 20px;
+            left: 10px;
+        }
+        .card-preview .expiry-date {
+            font-size: 14px;
+            position: absolute;
+            bottom: 20px;
+            right: 100px;
+        }
+        .card-preview .payment-system {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+        .card-preview img {
+            max-width: 100px;
+            max-height: 30px;
+            margin-bottom: 10px;
+        }
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
-    <div class="menu">
-        <ul class="main-menu">
-            <li class="menu-item">
-                <span>Книги</span>
-                <ul class="sub-menu">
-                    <li class="menu-item">
-                        <span>Отечественные</span>
-                    </li>
-                    <li class="menu-item">
-                        <span>Зарубежные</span>
-                        <ul class="sub-menu">
-                            <li class="menu-item"><span>Детективы</span></li>
-                            <li class="menu-item"><span>Научная фантастика</span></li>
-                            <li class="menu-item"><span>Исторические</span></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-            <li class="menu-item">
-                <span>DVD</span>
-                <ul class="sub-menu">
-                    <li class="menu-item"><span>Отечественные</span></li>
-                    <li class="menu-item">
-                        <span>Зарубежные</span>
-                        <ul class="sub-menu">
-                            <li class="menu-item"><span>Детективы</span></li>
-                            <li class="menu-item"><span>Научная фантастика</span></li>
-                            <li class="menu-item"><span>Исторические</span></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+    <div class="container">
+        <div class="form-container">
+            <form id="card-form">
+                <label for="bank-name">Название банка:</label><br>
+                <select id="bank-name" name="bank-name">
+                    <option value="" disabled selected>Выберите банк</option>
+                    <option value="Sberbank">Сбербанк</option>
+                    <option value="VTB">ВТБ</option>
+                    <option value="Tinkoff">Тинькофф</option>
+                </select><br>
+                <label for="payment-system">Тип платежной системы:</label><br>
+                <select id="payment-system" name="payment-system">
+                    <option value="" disabled selected>Выберите платежную систему</option>
+                    <option value="Visa">Visa</option>
+                    <option value="Mastercard">Mastercard</option>
+                    <option value="Mir">Мир</option>
+                </select><br>
+                <label for="card-number">Номер карты (16 цифр):</label><br>
+                <input type="text" id="card-number" name="card-number" maxlength="16"><br>
+                <label for="cardholder-name">Имя держателя карты (до 10 символов):</label><br>
+                <input type="text" id="cardholder-name" name="cardholder-name" maxlength="10"><br>
+                <label for="expiry-date">Месяц и год окончания карты (MM/YY):</label><br>
+                <input type="text" id="expiry-date" name="expiry-date" maxlength="5" placeholder="MM/YY"><br><br>
+                <input type="submit" value="Отправить">
+            </form>
+        </div>
+
+        <div class="card-preview" id="card-preview">
+            <img id="bank-logo" src="" alt="Логотип банка" style="display:none;width:75px;height: 30px">
+            <div class="bank-name" id="preview-bank-name"></div>
+            <div class="card-number" id="preview-card-number"></div>
+            <div class="cardholder-name" id="preview-cardholder-name"></div>
+            <div class="expiry-date" id="preview-expiry-date"></div>
+            <img id="payment-logo" src="" alt="Логотип платежной системы" class="payment-system" style="display:none;width:54px;height: 30px">
+        </div>
     </div>
-    <script src="script.js"></script>
+
+    <table id="card-table">
+        <thead>
+            <tr>
+                <th>Название банка</th>
+                <th>Тип платежной системы</th>
+                <th>Номер карты</th>
+                <th>Имя держателя карты</th>
+                <th>Месяц и год окончания карты</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script>
+        const form = document.getElementById('card-form');
+        const previewBankName = document.getElementById('preview-bank-name');
+        const previewCardNumber = document.getElementById('preview-card-number');
+        const previewCardholderName = document.getElementById('preview-cardholder-name');
+        const previewExpiryDate = document.getElementById('preview-expiry-date');
+        const bankLogo = document.getElementById('bank-logo');
+        const paymentLogo = document.getElementById('payment-logo');
+        const tableBody = document.querySelector('#card-table tbody');
+
+        const bankLogos = {
+            'Sberbank': 'images/сбер.png',
+            'VTB': 'images/втб.png',
+            'Tinkoff': 'images/тинькофф.png'
+        };
+
+        const paymentLogos = {
+            'Visa': 'images/visa.png',
+            'Mastercard': 'images/mastercard.png',
+            'Mir': 'images/mir.png'
+        };
+
+        form.addEventListener('input', function() {
+            const bankName = document.getElementById('bank-name').value;
+            const paymentSystem = document.getElementById('payment-system').value;
+            //previewBankName.textContent = bankName;
+            previewCardNumber.textContent = document.getElementById('card-number').value;
+            previewCardholderName.textContent = document.getElementById('cardholder-name').value;
+            previewExpiryDate.textContent = document.getElementById('expiry-date').value;
+
+            if (bankLogos[bankName]) {
+                bankLogo.src = bankLogos[bankName];
+                bankLogo.style.display = 'block';
+            } else {
+                bankLogo.style.display = 'none';
+            }
+
+            if (paymentLogos[paymentSystem]) {
+                paymentLogo.src = paymentLogos[paymentSystem];
+                paymentLogo.style.display = 'block';
+            } else {
+                paymentLogo.style.display = 'none';
+            }
+        });
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const bankName = document.getElementById('bank-name').value;
+            const paymentSystem = document.getElementById('payment-system').value;
+            const cardNumber = document.getElementById('card-number').value;
+            const cardholderName = document.getElementById('cardholder-name').value;
+            const expiryDate = document.getElementById('expiry-date').value;
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${bankName}</td>
+                <td>${paymentSystem}</td>
+                <td>${cardNumber}</td>
+                <td>${cardholderName}</td>
+                <td>${expiryDate}</td>
+            `;
+            tableBody.appendChild(newRow);
+
+            form.reset();
+            previewBankName.textContent = '';
+            previewCardNumber.textContent = '';
+            previewCardholderName.textContent = '';
+            previewExpiryDate.textContent = '';
+            bankLogo.style.display = 'none';
+            paymentLogo.style.display = 'none';
+        });
+    </script>
 </body>
 </html>
