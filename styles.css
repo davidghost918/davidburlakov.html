@@ -1,0 +1,34 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.menu {
+    width: 200px;
+}
+
+.main-menu, .sub-menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    position: relative;
+}
+
+.menu-item > span {
+    display: block;
+    background-color: #b22222;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.sub-menu {
+    display: none;
+    margin-left: 20px;
+}
+
+.menu-item.active > .sub-menu {
+    display: block;
+}
