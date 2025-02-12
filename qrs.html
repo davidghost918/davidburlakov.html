@@ -1,0 +1,34 @@
+{% extends 'layouts/history.html' %}
+{% load static %}
+{% block another_css_files %}
+    <link href="{% static 'css/history/common.css' %}" rel="stylesheet"/>
+	<link href="{% static 'css/history/qrs.css' %}" rel="stylesheet"/>
+{% endblock %}
+{% block qrs_bold %}class="bold"{% endblock %}
+{% block history_menu_selected %}selected{% endblock %}
+{% block history_content %}
+	<div class="history">
+		<div class="list">
+			{% for date, urls in urls_by_dates.items %}
+				<div class="date-item">
+					<div class="date-title">
+						{{ date }}
+					</div>
+				</div>
+				{% for url in urls %}
+					<div class="list-item">
+						<div class="left">
+							<img class="qr-icon" src="{% static 'images/svg/bold/qr.svg' %}" />
+							<div class="original-url">
+								<a href="http://{{ request.get_host }}/{{ url.original_url }}">{{ url.original_url }}</a>
+							</div>
+						</div>
+						<div class="right">
+							<p>{{ url.created_at|date:'d.m.Y H:i' }}</p>
+						</div>
+					</div>
+				{% endfor %}
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}

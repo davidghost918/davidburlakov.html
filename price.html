@@ -1,0 +1,35 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Тарифы{% endblock %}
+{% block another_css_files %}
+	<link href="{% static 'css/price.css' %}" rel="stylesheet"/>
+{% endblock %}
+{% block content_class %}price-frame{% endblock %}
+{% block price_selected %}selected{% endblock %}
+{% block price_bold %}bold{% endblock %}
+{% block price_icon %}
+	<img src="{% static 'images/svg/bold/price.svg' %}" alt="Тарифы">
+{% endblock %}
+{% block content %}
+<div>
+    <h2>Тарифы</h2>
+    <table class="price-table">
+        <thead>
+            <tr>
+                <th style="width: 30vh;">Тариф</th>
+                <th style="width: 30vh;">Цена</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Бесплатный</td>
+                <td>0 руб.</td>
+            </tr>
+            <tr>
+                <td>Стандарт</td>
+                <td>499 руб./мес</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

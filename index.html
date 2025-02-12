@@ -1,0 +1,60 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Линкер{% endblock %}
+{% block another_css_files %}
+	<link href="{% static 'css/index.css' %}" rel="stylesheet"/>
+	<link href="{% static 'css/parts/copy_alert.css' %}" rel="stylesheet"/>
+{% endblock %}
+{% block index_selected %}selected{% endblock %}
+{% block index_bold %}bold{% endblock %}
+{% block index_icon %}
+	<img src="{% static 'images/svg/bold/index.svg' %}" alt="Линкер">
+{% endblock %}
+{% block frames %}
+	{% include 'layouts/parts/copy_alert.html' %}
+{% endblock %}
+{% block content %}
+	<div class="index {% if url != "" %}with-url{% endif %}">
+		<h1>Сокращение ссылок</h1>
+		<form method="POST" action="{% url 'generate_url' %}">
+		{% csrf_token %}
+			<input name="url" id="urlInputField" class="url" type="text" placeholder="Нажмите ctrl+v или вставьте ссылку" value="{{ url.original_url }}" autofocus/>
+			<img id="crossButton" class="cross-small" src="{% static 'images/svg/normal/cross.svg' %}"/>
+			<input id="submitButton" type="submit" class="submit text-label" value="Сократить"/>
+		</form>
+		{% if url %}
+		<hr>
+		<div class="result">
+			<div style="display: inline-block;">
+				<div class="short-url">
+					<a id="shortUrlA" href="http://{{ request.get_host }}/{{ url.short_url }}">{{ request.get_host }}/{{ url.short_url }}</a>
+					<br>
+					<span id="copyInfoSpan" hidden>ссылка скопирована в буфер обмена</span>
+				</div>
+			</div>
+			<div class="buttons">
+				<button class="gray-hovered" id="copyButton">
+					<img src="{% static 'images/svg/bold/copy.svg' %}" />
+				</button>
+			</div>
+		</div>
+		<script>
+			copyTextFallback(shortUrlA.innerHTML);
+			copyInfoSpan.removeAttribute("hidden");
+			submitButton.classList.add("active");
+			submitButton.classList.add("sky-hovered");
+
+			var isShareFrameHidden = true;
+			
+			copyButton.addEventListener('click', function(event) {
+				copyAlert.removeAttribute("hidden");
+				copyTextFallback(shortUrlA.innerHTML);
+				setTimeout(() => {
+					copyAlert.setAttribute("hidden", "hidden");
+				}, 3000);
+			})
+		</script>
+		{% endif %}
+	</div>
+	<script src="{% static 'js/index.js' %}"></script>
+{% endblock %}

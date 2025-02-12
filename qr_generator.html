@@ -1,0 +1,109 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load qr_code %}
+{% block title %}Это QR-генератор от VI–media{% endblock %}
+{% block another_css_files %}
+	<link href="{% static 'css/qr_generator.css' %}" rel="stylesheet"/>
+	<link href="{% static 'css/parts/download_qr.css' %}" rel="stylesheet"/>
+	<link href="{% static 'css/parts/edit_qr.css' %}" rel="stylesheet"/>
+{% endblock %}
+{% block qr_selected %}selected{% endblock %}
+{% block qr_bold %}bold{% endblock %}
+{% block qr_icon %}
+	<img src="{% static 'images/svg/bold/qr.svg' %}" alt="QR-генератор">
+{% endblock %}
+{% block frames %}
+	{% include 'layouts/parts/download_qr.html' %}
+	{% include 'layouts/parts/edit_qr.html' %}
+{% endblock %}
+{% block content %}
+	<div class="qr{% if qr %} with-qr{% endif %}">
+		<h1>Генератор QR</h1>
+		<form class="url" method="POST" action="{% url 'generate_qr' %}">
+			{% csrf_token %}
+			<input name="url" id="urlInputField" class="url" type="text" placeholder="Нажмите ctrl+v или вставьте ссылку" value="{{ original_url }}" autofocus/>
+			<input id="submitButton" type="submit" class="submit text-label" value="Сократить"/>
+		</form>
+		{% if qr %}
+		<hr>
+		<div class="result">
+			<div style="display: inline-block;">
+				<div id="qrImage" class="short-url"></div>
+			</div>
+			<div class="buttons">
+				<button id="editButton" class="gray-hovered">
+					<img src="{% static 'images/svg/bold/edit.svg' %}" />
+				</button>
+				<button id="downloadButton" class="gray-hovered">
+					<img src="{% static 'images/svg/bold/download.svg' %}" />
+				</button>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+	{% if qr %}
+	<script>
+		if (window.innerHeight > window.innerWidth) {
+			qrSizeInPixels = (window.innerWidth * 31.5789473684) / 100;
+			logoSizeInPixels = (window.innerWidth * 31.5789473684) / 100;
+		}
+
+		var isShareFrameHidden = true;
+		submitButton.classList.add("active");
+		submitButton.classList.add("sky-hovered");
+
+		downloadButton.addEventListener('click', function(event) {
+			downloadQr.removeAttribute("hidden");
+		})
+
+		editButton.addEventListener('click', function(event) {
+			qrEditor.removeAttribute("hidden");
+
+			{% if qr.is_with_background %}
+				changeBackgroundDraw();
+				backgroundDrawToogle.checked = true;
+			{% endif %}
+			
+			var logoFile = "";
+			{% if qr.logo != "" %}
+				logoFile = "/media/{{ qr.logo }}",
+			{% endif %}
+
+            drawQR(
+                qrEditorCanvas,
+                "{{ host }}/{{ url }}",
+                logoFile,
+                qrColor.value,
+                backgroundColor.value,
+				backgroundDrawToogle.checked
+            );
+		})
+
+		backgroundColor.value = "#{{ qr.background_color }}";
+		backgroundColorLabel.innerHTML = backgroundColor.value;
+		qrColor.value = "#{{ qr.qr_color }}";
+		qrColorLabel.innerHTML = qrColor.value;
+
+		{% if qr.is_with_background %}
+			backgroundDrawToogle.checked = true;
+			backgroundDrawToogle.dispatchEvent(new Event('change'));
+			setWithBackground(false);
+		{% endif %}
+
+		var logoFile = "";
+		{% if qr.logo != "" %}
+			logoFile = "/media/{{ qr.logo }}",
+		{% endif %}
+
+		drawQR(
+			qrImage,
+			"{{ host }}/{{ url }}",
+			logoFile,
+			qrColor.value,
+			backgroundColor.value,
+			backgroundDrawToogle.checked
+		);
+	</script>
+	{% endif %}
+	<script src="{% static 'js/qr_generator.js' %}"></script>
+{% endblock %}
